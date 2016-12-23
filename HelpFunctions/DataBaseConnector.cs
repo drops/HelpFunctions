@@ -18,8 +18,11 @@ namespace HelpFunctions
         bool IntegratedSecurity = false;
 
 
+
+
         SqlConnection connection;
         SqlCommand command;
+        SqlDataAdapter adapter;
 
         private DataBaseConnector()
         {
@@ -47,8 +50,17 @@ namespace HelpFunctions
             }
         }
 
+<<<<<<< HEAD
 
         public bool Open()
+=======
+        private int ExecuteCommand()
+        {
+            return command.ExecuteNonQuery();
+        }
+
+        private void SetCommand(string commandString, bool isProcedureName)
+>>>>>>> origin/master
         {
             try
             {
