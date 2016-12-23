@@ -9,16 +9,8 @@ namespace HelpFunctions
 {
     public sealed class DataBaseConnector
     {
-        private static DataBaseConnector Instance = null;
 
-        string Login
-        { get; set; }
-        string Password
-        { get; set; }
-        string DataBaseName
-        { get; set; }
-        string Catalog
-        { get; set; }
+        DataBaseParameter Parameters;
 
         private string ConnectionString;
         private string CommandString;
@@ -34,25 +26,11 @@ namespace HelpFunctions
             connection = new SqlConnection();
         }
 
-        public static DataBaseConnector instance
+        public DataBaseConnector(DataBaseParameter parameter)
         {
-            get
-            {
-                if(Instance == null)
-                {
-                    Instance = new DataBaseConnector();
-                }
-                return Instance;
-            }
-        }
-
-        public DataBaseConnector(string login, string password, string databasename, string catalog, bool isitegratedsecurity)
-        {
-            Login = login;
-            Password = password;
-            DataBaseName = databasename;
-            Catalog = catalog;
-            IntegratedSecurity = isitegratedsecurity;
+            Parameters = parameter;
+            GenerateConnectionString();
+            connection = new SqlConnection(ConnectionString);
         }
 
 
@@ -69,22 +47,39 @@ namespace HelpFunctions
             }
         }
 
+
+        public bool Open()
+        {
+            try
+            {
+                if (connection.State != System.Data.ConnectionState.Open)
+                    connection.Open();
+                return true;
+            }catch(Exception e)
+            {
+                return false;
+            }
+            
+        }
+
+        public bool Close()
+        {
+            try
+            {
+                if (connection.State == System.Data.ConnectionState.Open)
+                    connection.Close();
+                return true;
+            }catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+
         private void SetCommand(string commandString, bool isProcedureName)
         {
             CommandString = commandString;
             IsProcedure = isProcedureName;
-        }
-
-        private void Open()
-        {
-            if(connection.State != System.Data.ConnectionState.Open)
-            connection.Open();
-        }
-
-        private void Close()
-        {
-            if (connection.State == System.Data.ConnectionState.Open)
-                connection.Close();
         }
 
 
@@ -99,10 +94,10 @@ namespace HelpFunctions
         {
             if(IntegratedSecurity == true)
             {
-                ConnectionString = string.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", DataBaseName, Catalog);
+                ConnectionString = string.Format("Data Source={0};Initial Catalog={1};Integrated Security=True", Parameters.DataBaseName, Parameters.Catalog);
             }else
             {
-                ConnectionString = string.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", DataBaseName, Catalog, Login, Password);
+                ConnectionString = string.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", Parameters.DataBaseName, Parameters.Catalog, Parameters.Login, Parameters.Password);
             }
         }
 
