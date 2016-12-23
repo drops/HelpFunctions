@@ -20,6 +20,7 @@ namespace HelpFunctions
 
         SqlConnection connection;
         SqlCommand command;
+        CommandParameter ComParameters;
 
         private DataBaseConnector()
         {
