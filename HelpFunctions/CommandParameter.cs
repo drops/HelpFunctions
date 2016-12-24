@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 namespace HelpFunctions
 {
-    class CommandParameter
+    public class CommandParameter
     {
         SqlParameter parameter;
 
@@ -43,7 +43,7 @@ namespace HelpFunctions
             return false;
         }
 
-        public SqlParameter ReturnSingleParameter(string parameterName)
+        public SqlParameter ReturnSingleParameterByName(string parameterName)
         {
             for (int i = 0; i < Parameters.Count; i++)
             {
@@ -53,6 +53,16 @@ namespace HelpFunctions
                 }
             }
             return null;
+        }
+
+        public SqlParameter ReturnSingleParameterByPosition(int position)
+        {
+            return Parameters[position];
+        }
+
+        public int ParameterCount()
+        {
+            return Parameters.Count;
         }
     }
 }

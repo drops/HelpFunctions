@@ -20,7 +20,7 @@ namespace HelpFunctions
 
         SqlConnection connection;
         SqlCommand command;
-        CommandParameter ComParameters;
+    
 
         private DataBaseConnector()
         {
@@ -90,6 +90,14 @@ namespace HelpFunctions
             command.CommandType = System.Data.CommandType.StoredProcedure;
         }
 
+
+        public void AddParametersToCommand(CommandParameter parameters)
+        {
+            for(int i = 0; i < parameters.ParameterCount(); i++)
+            {
+                command.Parameters.Add(parameters.ReturnSingleParameterByPosition(i));
+            }
+        }
 
         private void GenerateConnectionString()
         {
