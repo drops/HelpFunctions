@@ -1,66 +1,68 @@
 ﻿using System;
-using System.IO;
+using System.Net;
+
+// TODO: Dodać sciaganie plikow i sprawdzanie czy juz takie istnieje na serwerze
 
 namespace HelpFunctions
 {
-    public class Log
+    public class FtpCommunicator
     {
-        string FileName = "log.txt";
-        string Path = AppDomain.CurrentDomain.BaseDirectory;
-        ErrorLog errorLog = new ErrorLog();
+        WebClient client;
 
+        string Filename;
+
+        string ftpAddress;
+        string Login;
+        string Password;
+        string path = AppDomain.CurrentDomain.BaseDirectory;
+        ErrorLog errorLog = new ErrorLog();
         int ErrorLogMode = 0;  // 0 - zapis do pliku, 
                                // 1 - zapis do pliku i komunikat w konsoli,
                                // 2 - zapis do pliku i poinformowanie oknem dialogowym, że wystąpił błąd,
                                // 3 - zapis do pliku i wyświetlenie treści w oknie dialogowym
 
+
+
+        public string Path
+        {
+            get
+            {
+                return path;
+            }
+            set
+            {
+                path = value;
+            }
+        }
+        
         
 
-        public Log()
+        public FtpCommunicator(string ftpaddress, string login, string password, string filename)
         {
-            if(!File.Exists(Path + FileName))
-            {
-                File.Create(Path + FileName);
-            }
+            ftpAddress = ftpaddress;
+            Login = login;
+            Password = password;
+            Filename = filename;
+
+            client = new WebClient();
+            client.Credentials = new NetworkCredential(Login, Password);
         }
 
-        public Log(string path, string filename)
+        public bool UploadFileToFtp()
         {
-            FileName = filename;
-            Path = path;
-
-            if(!File.Exists(Path + FileName))
-            {
-                File.Create(Path + FileName);
-            }
-        }
-
-        public void WriteLog(string logMessage)
-        {
+            bool result = false;
             try
             {
-                File.AppendAllText(Path + FileName, AddDate(logMessage) + Environment.NewLine);
+                client.UploadFile(ftpAddress + @"/" + Filename, Path + Filename);
+
+                result = true;
             }catch (Exception e)
             {
                 SaveError(e.ToString());
+                result = false;
             }
-        }
 
-        public void WriteAndShow(string logMessage)
-        {
-            try
-            {
-                File.AppendAllText(Path + FileName, AddDate(logMessage) + Environment.NewLine);
-                Console.WriteLine(AddDate(logMessage));
-            }catch (Exception e)
-            {
-                SaveError(e.ToString());
-            }
-        }
-
-        private string AddDate(string message)
-        {
-            return DateTime.Now + ": " + message;
+            return result;
         }
 
         public void SetErrorLogFileName(string filename)
@@ -88,6 +90,7 @@ namespace HelpFunctions
             else errorLog.WriteLog(ErrorMessage);
             return ErrorMessage;
         }
+
 
     }
 }

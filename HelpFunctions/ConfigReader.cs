@@ -1,66 +1,77 @@
 ﻿using System;
-using System.IO;
+using System.Xml;
 
 namespace HelpFunctions
 {
-    public class Log
+    public class ConfigReader
     {
-        string FileName = "log.txt";
+        string FileName = "set.xml";
         string Path = AppDomain.CurrentDomain.BaseDirectory;
-        ErrorLog errorLog = new ErrorLog();
 
+
+        XmlDocument document;
+        ErrorLog errorLog = new ErrorLog();
         int ErrorLogMode = 0;  // 0 - zapis do pliku, 
                                // 1 - zapis do pliku i komunikat w konsoli,
                                // 2 - zapis do pliku i poinformowanie oknem dialogowym, że wystąpił błąd,
                                // 3 - zapis do pliku i wyświetlenie treści w oknie dialogowym
 
-        
 
-        public Log()
+
+
+
+        public ConfigReader()
         {
-            if(!File.Exists(Path + FileName))
+            try
             {
-                File.Create(Path + FileName);
+                document = new XmlDocument();
+                document.Load(Path + FileName);
+            }catch (Exception e)
+            {
+                SaveError("ConfigReader->Konstruktor: " + e.ToString());
             }
         }
 
-        public Log(string path, string filename)
+        public ConfigReader(string path, string filename)
         {
-            FileName = filename;
             Path = path;
-
-            if(!File.Exists(Path + FileName))
-            {
-                File.Create(Path + FileName);
-            }
-        }
-
-        public void WriteLog(string logMessage)
-        {
+            FileName = filename;
             try
             {
-                File.AppendAllText(Path + FileName, AddDate(logMessage) + Environment.NewLine);
+                document = new XmlDocument();
+                document.Load(Path + FileName);
             }catch (Exception e)
             {
-                SaveError(e.ToString());
+                SaveError("ConfigReader->Konstruktor: " + e.ToString());
+            }
+            
+        }
+
+        public string ReadDataFromConfig(string xmlPath)
+        {
+            if(document.DocumentElement.SelectSingleNode(xmlPath) != null)
+            {
+                return document.DocumentElement.SelectSingleNode(xmlPath).InnerText;
+            }else
+            {
+                SaveError("ConfigReader->ReadDataFromConfig: Albo węzeł " + xmlPath + " nie istnieje, albo jest pusty. Mogą być problemy.");
+                return "";
             }
         }
 
-        public void WriteAndShow(string logMessage)
+        public XmlNodeList ReadNodesFromConfig(string NodesName)
         {
-            try
+            XmlNodeList NodeList = document.SelectNodes(NodesName);
+            if(NodeList == null || NodeList.Count == 0)
             {
-                File.AppendAllText(Path + FileName, AddDate(logMessage) + Environment.NewLine);
-                Console.WriteLine(AddDate(logMessage));
-            }catch (Exception e)
-            {
-                SaveError(e.ToString());
+                SaveError("ConfigReader->ReadNodesFromConfig: Brak listy szukanych węzłów. Mogą być problemy.");
             }
+            return NodeList;
         }
 
-        private string AddDate(string message)
+        public int ReturnNodesCount(string XPath)
         {
-            return DateTime.Now + ": " + message;
+            return document.SelectNodes(XPath).Count;
         }
 
         public void SetErrorLogFileName(string filename)
@@ -88,6 +99,8 @@ namespace HelpFunctions
             else errorLog.WriteLog(ErrorMessage);
             return ErrorMessage;
         }
+
+
 
     }
 }

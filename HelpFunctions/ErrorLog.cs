@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 
 namespace HelpFunctions
 {
-    class ErrorLog
+    public class ErrorLog
     {
         string Filename = "errors.log";
         string Path = AppDomain.CurrentDomain.BaseDirectory;
@@ -38,28 +34,45 @@ namespace HelpFunctions
                 File.AppendAllText(Path + Filename, AddDateAndHeader(errorMessage) + Environment.NewLine);
                 return errorMessage;
             }
-            catch (Exception e) { }
-            return errorMessage;
+            catch (Exception e) { return "WriteLog: Nie można zapisać błędu: " + e.ToString(); }
         }
 
-        public void WriteAndShowLog(string errorMessage)
+        public void ChangeFileName(string filename)
+        {
+            Filename = filename;
+        }
+
+        public string WriteAndShowLog(string errorMessage)
         {
             try
             {
                 File.AppendAllText(Path + Filename, AddDateAndHeader(errorMessage) + Environment.NewLine);
                 Console.WriteLine(AddDateAndHeader(errorMessage) + Environment.NewLine);
+                return errorMessage;
             }
-            catch (Exception e) { }
+            catch (Exception e) { return "WriteAndShowLog: Nie można zapisać błędu: " + e.ToString(); }
         }
 
-        public void WriteAndShowWindowLog(string errorMessage)
+        public string WriteAndShowWindowLog(string errorMessage)
         {
             try
             {
                 File.AppendAllText(Path + Filename, AddDateAndHeader(errorMessage) + Environment.NewLine);
                 MessageBox.Show(AddDateAndHeader(errorMessage) + Environment.NewLine, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return errorMessage;
             }
-            catch (Exception e) { }
+            catch (Exception e) { return "WriteAndShowWindowLog: Nie można zapisać błędu: " + e.ToString(); }
+        }
+
+        public string WriteToLogAndTell(string errorMessage)
+        {
+            try
+            {
+                File.AppendAllText(Path + Filename, AddDateAndHeader(errorMessage) + Environment.NewLine);
+                MessageBox.Show("Wystąpił błąd w działaniu programu. Treść błędu została zapisana w dzienniku błędów.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return errorMessage;
+            }
+            catch (Exception e) { return "WriteToLogAndTell: Nie można zapisać błędu: " + e.ToString(); }
         }
 
         private string AddDateAndHeader(string msg)
