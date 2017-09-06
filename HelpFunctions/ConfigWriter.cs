@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace HelpFunctions
 {
@@ -8,6 +9,8 @@ namespace HelpFunctions
     {
         string FileName = "set.xml";
         string Path = AppDomain.CurrentDomain.BaseDirectory;
+
+        XElement rootElement;
 
         public XmlDocument document;
         ErrorLog errorLog = new ErrorLog();
