@@ -19,6 +19,13 @@ namespace HelpFunctions
             return (inputDate - dt).Days;
         }
 
+        public static DateTime FromClarion(int clarionDate)
+        {
+            DateTime dt = new DateTime(1800, 12, 28, 0, 0, 0);
+            dt = dt.AddDays(clarionDate);
+            return dt;
+        }
+
         public static int FromXLFormatToInt(string liczba)
         {
             liczba = liczba.Replace('.', ',');
