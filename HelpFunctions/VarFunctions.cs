@@ -19,6 +19,11 @@ namespace HelpFunctions
             return (inputDate - dt).Days;
         }
 
+        public static string StringFromClarion(int clarionDate)
+        {
+            return FromClarion(clarionDate).ToShortDateString();
+        }
+
         public static DateTime FromClarion(int clarionDate)
         {
             DateTime dt = new DateTime(1800, 12, 28, 0, 0, 0);
